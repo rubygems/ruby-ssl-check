@@ -1,3 +1,11 @@
+#!/usr/bin/env ruby
+
+if ARGV.include?("-h") || ARGV.include?("--help")
+  puts "USAGE: check.rb [HOSTNAME] [TLS_VERSION] [VERIFY]"
+  puts "  default: check.rb rubygems.org auto VERIFY_PEER"
+  puts "  example: check.rb github.com TLSv1_2 VERIFY_NONE"
+end
+
 require 'uri'
 require 'net/http'
 
@@ -36,21 +44,17 @@ puts
 puts "With that out of the way, let's see if you can connect to rubygems.org..."
 puts
 
-# Check for a successful connection
+host = ARGV.shift || "rubygems.org"
+ssl_version = ARGV.shift
+verify_mode = ARGV.any? ? OpenSSL::SSL.const_get(ARGV.shift) : OpenSSL::SSL::VERIFY_PEER
+
 begin
-  uri = URI("https://rubygems.org")
-
-  # TODO RM
-  uri = URI("https://localhost")
-
+  # Try to connect using HTTPS
+  uri = URI("https://#{host}")
   Net::HTTP.new(uri.host, uri.port).tap do |http|
     http.use_ssl = true
-
-    # TODO RM simulation of future TLS deprecation
-    http.ssl_version = :TLSv1
-    # TODO RM simulation of certificate being valid
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-
+    http.ssl_version = ssl_version.to_sym if ssl_version
+    http.verify_mode = verify_mode
   end.start
 rescue => error
   puts "Unfortunately, this Ruby can't connect to rubygems.org. 😡"
