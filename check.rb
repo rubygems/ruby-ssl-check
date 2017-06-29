@@ -79,12 +79,15 @@ rescue => error
   end
 end
 
-# We were able to connect, but perhaps this Ruby will have trouble when we require TLSv1.2
-unless OpenSSL::SSL::SSLContext::METHODS.include?(:TLSv1_2)
-  abort "Although your Ruby can connect to rubygems.org today, you need to upgrade OpenSSL to " \
-    "continue using rubygems.org after January 2018."
-end
-
 # Whoa, it seems like it's working!
 puts "Hooray! This Ruby can connect to rubygems.org. You are all set to use Bundler and RubyGems. 👌"
+
+# We were able to connect, but perhaps this Ruby will have trouble when we require TLSv1.2
+unless OpenSSL::SSL::SSLContext::METHODS.include?(:TLSv1_2)
+  puts
+  puts "WARNING: Although your Ruby can connect to rubygems.org today, your OpenSSL is very old! 👴"
+  puts "WARNING: You will need to upgrade OpenSSL before January 2018 in order to keep using rubygems.org."
+  abort
+end
+
 exit 0
