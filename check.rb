@@ -64,6 +64,18 @@ rescue => error
   when /read server hello A/
     abort "Your Ruby can't connect to rubygems.org because your version of OpenSSL is too old. " \
       "You'll need to upgrade your OpenSSL install and/or recompile Ruby to use a newer OpenSSL."
+  else
+    puts "Even worse, we're not sure why. 😕"
+    puts
+    puts "Here's the full error information:"
+    puts "#{error.class}: #{error.message}"
+    puts "  " << error.backtrace.join("\n  ")
+    puts
+    puts "You might have more luck using Mislav's SSL doctor.rb script. You can get it here:"
+    puts "https://github.com/mislav/ssl-tools/blob/8b3dec4/doctor.rb"
+    puts "Read more about the script and how to use it in this blog post:"
+    puts "https://mislav.net/2013/07/ruby-openssl/"
+    abort
   end
 end
 
