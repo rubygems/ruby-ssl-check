@@ -4,6 +4,7 @@ if ARGV.include?("-h") || ARGV.include?("--help")
   puts "USAGE: check.rb [HOSTNAME] [TLS_VERSION] [VERIFY]"
   puts "  default: check.rb rubygems.org auto VERIFY_PEER"
   puts "  example: check.rb github.com TLSv1_2 VERIFY_NONE"
+  exit 0
 end
 
 require 'uri'
