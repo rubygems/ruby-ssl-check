@@ -46,8 +46,37 @@ puts "With that out of the way, let's see if you can connect to rubygems.org..."
 puts
 
 host = ARGV.shift || "rubygems.org"
+uri = URI("https://#{host}")
 ssl_version = ARGV.shift
 verify_mode = ARGV.any? ? OpenSSL::SSL.const_get(ARGV.shift) : OpenSSL::SSL::VERIFY_PEER
+
+def error_reason(error)
+  case error.message
+  when /certificate verify failed/
+    "certificate verification"
+  when /read server hello A/
+    "SSL/TLS protocol version mismatch"
+  else
+    error.message
+  end
+end
+
+begin
+  Bundler::Fetcher.new(Bundler::Source::Rubygems::Remote.new(uri)).send(:connection).request(uri)
+  bundler_status = "success ✅"
+rescue => error
+  bundler_status = "failed  ❌  (#{error_reason(error)})"
+end
+puts "Bundler connection to RubyGems.org:       #{bundler_status}"
+
+begin
+  require 'rubygems/remote_fetcher'
+  Gem::RemoteFetcher.fetcher.fetch_path(uri)
+  rubygems_status = "success ✅"
+rescue => error
+  rubygems_status = "failed  ❌  (#{error_reason(error)})"
+end
+puts "RubyGems connection to RubyGems.org:      #{rubygems_status}"
 
 begin
   # Try to connect using HTTPS
@@ -57,7 +86,12 @@ begin
     http.ssl_version = ssl_version.to_sym if ssl_version
     http.verify_mode = verify_mode
   end.start
+
+  puts "Ruby net/http connection to RubyGems.org: success ✅"
+  puts
 rescue => error
+  puts "Ruby net/http connection to RubyGems.org: failed  ❌"
+  puts
   puts "Unfortunately, this Ruby can't connect to rubygems.org. 😡"
 
   case error.message
@@ -84,8 +118,16 @@ rescue => error
   end
 end
 
-# Whoa, it seems like it's working!
-puts "Hooray! This Ruby can connect to rubygems.org. You are all set to use Bundler and RubyGems. 👌"
+if bundler_status =~ /success/ && rubygems_status =~ /success/
+  # Whoa, it seems like it's working!
+  puts "Hooray! This Ruby can connect to rubygems.org. You are all set to use Bundler and RubyGems. 👌"
+elsif rubygems_status !~ /success/
+  puts "It looks like Ruby and Bundler can connect to RubyGems.org, but RubyGems itself cannot. You can likely solve this by manually downloading and installing a RubyGems update. Visit https://git.io/rubygems-ssl-guide for instructions on how to manually upgrade RubyGems. 💎"
+elsif bundler_status !~ /success/
+  puts "Although your Ruby installation and RubyGems can both connect to #{host}, Bundler is having trouble. The most likely way to fix this is to upgrade Bundler by running `gem install bundler`. Run this script again after doing that to make sure everything is all set. If you're still having trouble, check out the troubleshooting guide at https://git.io/rubygems-ssl-guide. 📦"
+else
+  puts "For some reason, your Ruby installation can connect to RubyGems.org, but neither RubyGems nor Bundler can. The most likely fix is to manually upgrade RubyGems by following the instructions at https://git.io/rubygems-ssl-guide. After you've done that, run `gem install bundler` to upgrade Bundler, and then run this script again to make sure everything worked. ❣️"
+end
 
 # We were able to connect, but perhaps this Ruby will have trouble when we require TLSv1.2
 unless OpenSSL::SSL::SSLContext::METHODS.include?(:TLSv1_2)
