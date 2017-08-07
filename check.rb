@@ -7,13 +7,10 @@ if ARGV.include?("-h") || ARGV.include?("--help")
   exit 0
 end
 
+host = ARGV.shift || "rubygems.org"
+
 require 'uri'
 require 'net/http'
-
-host = ARGV.shift || "rubygems.org"
-uri = URI("https://#{host}")
-ssl_version = ARGV.shift
-verify_mode = ARGV.any? ? OpenSSL::SSL.const_get(ARGV.shift) : OpenSSL::SSL::VERIFY_PEER
 
 begin
   require 'openssl'
@@ -31,6 +28,10 @@ begin
   require 'bundler'
 rescue LoadError
 end
+
+uri = URI("https://#{host}")
+ssl_version = ARGV.shift
+verify_mode = ARGV.any? ? OpenSSL::SSL.const_get(ARGV.shift) : OpenSSL::SSL::VERIFY_PEER
 
 ruby_version = RUBY_VERSION.dup
 ruby_version << "p#{RUBY_PATCHLEVEL}" if defined?(RUBY_PATCHLEVEL)
