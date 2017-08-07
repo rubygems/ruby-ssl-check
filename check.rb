@@ -7,6 +7,11 @@ if ARGV.include?("-h") || ARGV.include?("--help")
   exit 0
 end
 
+host = ARGV.shift || "rubygems.org"
+uri = URI("https://#{host}")
+ssl_version = ARGV.shift
+verify_mode = ARGV.any? ? OpenSSL::SSL.const_get(ARGV.shift) : OpenSSL::SSL::VERIFY_PEER
+
 require 'uri'
 require 'net/http'
 
@@ -44,11 +49,6 @@ puts "SSL_CERT_DIR:   %s" % OpenSSL::X509::DEFAULT_CERT_DIR
 puts
 puts "With that out of the way, let's see if you can connect to #{host}..."
 puts
-
-host = ARGV.shift || "rubygems.org"
-uri = URI("https://#{host}")
-ssl_version = ARGV.shift
-verify_mode = ARGV.any? ? OpenSSL::SSL.const_get(ARGV.shift) : OpenSSL::SSL::VERIFY_PEER
 
 def error_reason(error)
   case error.message
