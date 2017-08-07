@@ -80,7 +80,6 @@ puts "RubyGems connection to RubyGems.org:      #{rubygems_status}"
 
 begin
   # Try to connect using HTTPS
-  uri = URI("https://#{host}")
   Net::HTTP.new(uri.host, uri.port).tap do |http|
     http.use_ssl = true
     http.ssl_version = ssl_version.to_sym if ssl_version
@@ -118,15 +117,16 @@ rescue => error
   end
 end
 
+guide_url = "https://ruby.to/rubygems-ssl-guide"
 if bundler_status =~ /success/ && rubygems_status =~ /success/
   # Whoa, it seems like it's working!
   puts "Hooray! This Ruby can connect to rubygems.org. You are all set to use Bundler and RubyGems. 👌"
 elsif rubygems_status !~ /success/
-  puts "It looks like Ruby and Bundler can connect to RubyGems.org, but RubyGems itself cannot. You can likely solve this by manually downloading and installing a RubyGems update. Visit https://git.io/rubygems-ssl-guide for instructions on how to manually upgrade RubyGems. 💎"
+  puts "It looks like Ruby and Bundler can connect to RubyGems.org, but RubyGems itself cannot. You can likely solve this by manually downloading and installing a RubyGems update. Visit #{guide_url} for instructions on how to manually upgrade RubyGems. 💎"
 elsif bundler_status !~ /success/
-  puts "Although your Ruby installation and RubyGems can both connect to #{host}, Bundler is having trouble. The most likely way to fix this is to upgrade Bundler by running `gem install bundler`. Run this script again after doing that to make sure everything is all set. If you're still having trouble, check out the troubleshooting guide at https://git.io/rubygems-ssl-guide. 📦"
+  puts "Although your Ruby installation and RubyGems can both connect to #{host}, Bundler is having trouble. The most likely way to fix this is to upgrade Bundler by running `gem install bundler`. Run this script again after doing that to make sure everything is all set. If you're still having trouble, check out the troubleshooting guide at #{guide_url} 📦"
 else
-  puts "For some reason, your Ruby installation can connect to RubyGems.org, but neither RubyGems nor Bundler can. The most likely fix is to manually upgrade RubyGems by following the instructions at https://git.io/rubygems-ssl-guide. After you've done that, run `gem install bundler` to upgrade Bundler, and then run this script again to make sure everything worked. ❣️"
+  puts "For some reason, your Ruby installation can connect to RubyGems.org, but neither RubyGems nor Bundler can. The most likely fix is to manually upgrade RubyGems by following the instructions at #{guide_url}. After you've done that, run `gem install bundler` to upgrade Bundler, and then run this script again to make sure everything worked. ❣️"
 end
 
 # We were able to connect, but perhaps this Ruby will have trouble when we require TLSv1.2
