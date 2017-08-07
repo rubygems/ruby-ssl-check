@@ -7,13 +7,13 @@ if ARGV.include?("-h") || ARGV.include?("--help")
   exit 0
 end
 
+require 'uri'
+require 'net/http'
+
 host = ARGV.shift || "rubygems.org"
 uri = URI("https://#{host}")
 ssl_version = ARGV.shift
 verify_mode = ARGV.any? ? OpenSSL::SSL.const_get(ARGV.shift) : OpenSSL::SSL::VERIFY_PEER
-
-require 'uri'
-require 'net/http'
 
 begin
   require 'openssl'
