@@ -57,6 +57,8 @@ def error_reason(error)
     "certificate verification"
   when /read server hello A/
     "SSL/TLS protocol version mismatch"
+  when /tlsv1 alert protocol version/
+    "requested TLS version is too old"
   else
     error.message
   end
@@ -100,7 +102,7 @@ rescue => error
     abort "Your Ruby can't connect to #{host} because you are missing the certificate " \
       "files OpenSSL needs to verify you are connecting to the genuine #{host} servers."
   # Check for TLS version errors
-  when /read server hello A/
+  when /read server hello A/, /tlsv1 alert protocol version/
     abort "Your Ruby can't connect to #{host} because your version of OpenSSL is too old. " \
       "You'll need to upgrade your OpenSSL install and/or recompile Ruby to use a newer OpenSSL."
   else
