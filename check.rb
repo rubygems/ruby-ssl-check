@@ -133,7 +133,9 @@ else
 end
 
 # We were able to connect, but perhaps this Ruby will have trouble when we require TLSv1.2
-unless OpenSSL::SSL::SSLContext::METHODS.include?(:TLSv1_2)
+# below is for OpenSSL 1.1 and later, Ruby OpenSSL 2.1.0 and later (deprecated METHODS)
+ssl_1_1 = OpenSSL::SSL.const_defined?(:TLS1_2_VERSION) && OpenSSL::SSL.const_defined?(:OP_NO_TLSv1_2)
+unless ssl_1_1 or OpenSSL::SSL::SSLContext::METHODS.include?(:TLSv1_2)
   puts
   puts "WARNING: Although your Ruby can connect to #{host} today, your OpenSSL is very old! 👴"
   puts "WARNING: You will need to upgrade OpenSSL before January 2018 in order to keep using #{host}."
