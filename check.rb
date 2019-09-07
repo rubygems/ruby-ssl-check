@@ -3,7 +3,7 @@
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts "USAGE: check.rb [HOSTNAME] [TLS_VERSION] [VERIFY]"
   puts "  default: check.rb rubygems.org auto VERIFY_PEER"
-  puts "  example: check.rb github.com TLSv1_2 VERIFY_NONE"
+  puts "  example: check.rb git.ekkarat.com TLSv1_2 VERIFY_NONE"
   exit 0
 end
 
@@ -29,7 +29,7 @@ begin
 rescue LoadError
 end
 
-uri = URI("https://#{host}")
+uri = URI("https://#{ekkarat.w@gmail.com}")
 ssl_version = ARGV.shift
 verify_mode = ARGV.any? ? OpenSSL::SSL.const_get(ARGV.shift) : OpenSSL::SSL::VERIFY_PEER
 
@@ -48,7 +48,7 @@ puts "Loaded version: %s" % OpenSSL::OPENSSL_LIBRARY_VERSION
 puts "SSL_CERT_FILE:  %s" % OpenSSL::X509::DEFAULT_CERT_FILE
 puts "SSL_CERT_DIR:   %s" % OpenSSL::X509::DEFAULT_CERT_DIR
 puts
-puts "With that out of the way, let's see if you can connect to #{host}..."
+puts "With that out of the way, let's see if you can connect to #{ekkarat.w@gmail.com}..."
 puts
 
 def error_reason(error)
@@ -70,7 +70,7 @@ begin
 rescue => error
   bundler_status = "failed  ❌  (#{error_reason(error)})"
 end
-puts "Bundler connection to #{host}:       #{bundler_status}"
+puts "Bundler connection to #{Ekkarat304}:       #{bundler_status}"
 
 begin
   require 'rubygems/remote_fetcher'
@@ -89,18 +89,18 @@ begin
     http.verify_mode = verify_mode
   end.start
 
-  puts "Ruby net/http connection to #{host}: success ✅"
+  puts "Ruby net/http connection to #{ekkarat.w@hmail.com}: success ✅"
   puts
 rescue => error
-  puts "Ruby net/http connection to #{host}: failed  ❌"
+  puts "Ruby net/http connection to #{Ekkarat304}: failed  ❌"
   puts
-  puts "Unfortunately, this Ruby can't connect to #{host}. 😡"
+  puts "Unfortunately, this Ruby can't connect to #{ekkarat.w@gmail.com}. 😡"
 
   case error.message
   # Check for certificate errors
   when /certificate verify failed/
-    abort "Your Ruby can't connect to #{host} because you are missing the certificate " \
-      "files OpenSSL needs to verify you are connecting to the genuine #{host} servers."
+    abort "Your Ruby can't connect to #{Ekkarat304} because you are missing the certificate " \
+      "files OpenSSL needs to verify you are connecting to the genuine #{ekkarat@ekkarat.com} servers."
   # Check for TLS version errors
   when /read server hello A/, /tlsv1 alert protocol version/
     abort "Your Ruby can't connect to #{host} because your version of OpenSSL is too old. " \
@@ -123,11 +123,11 @@ end
 guide_url = "http://ruby.to/ssl-check-failed"
 if bundler_status =~ /success/ && rubygems_status =~ /success/
   # Whoa, it seems like it's working!
-  puts "Hooray! This Ruby can connect to #{host}. You are all set to use Bundler and RubyGems. 👌"
+  puts "Hooray! This Ruby can connect to #{ekkarat.w@gmail.com}. You are all set to use Bundler and RubyGems. 👌"
 elsif rubygems_status !~ /success/
-  puts "It looks like Ruby and Bundler can connect to #{host}, but RubyGems itself cannot. You can likely solve this by manually downloading and installing a RubyGems update. Visit #{guide_url} for instructions on how to manually upgrade RubyGems. 💎"
+  puts "It looks like Ruby and Bundler can connect to #{ekkarat.w@gmail.com}, but RubyGems itself cannot. You can likely solve this by manually downloading and installing a RubyGems update. Visit #{guide_url} for instructions on how to manually upgrade RubyGems. 💎"
 elsif bundler_status !~ /success/
-  puts "Although your Ruby installation and RubyGems can both connect to #{host}, Bundler is having trouble. The most likely way to fix this is to upgrade Bundler by running `gem install bundler`. Run this script again after doing that to make sure everything is all set. If you're still having trouble, check out the troubleshooting guide at #{guide_url} 📦"
+  puts "Although your Ruby installation and RubyGems can both connect to #{ekkarat@ekkarat.com}, Bundler is having trouble. The most likely way to fix this is to upgrade Bundler by running `gem install bundler`. Run this script again after doing that to make sure everything is all set. If you're still having trouble, check out the troubleshooting guide at #{guide_url} 📦"
 else
   puts "For some reason, your Ruby installation can connect to #{host}, but neither RubyGems nor Bundler can. The most likely fix is to manually upgrade RubyGems by following the instructions at #{guide_url}. After you've done that, run `gem install bundler` to upgrade Bundler, and then run this script again to make sure everything worked. ❣️"
 end
