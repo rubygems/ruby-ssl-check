@@ -45,7 +45,7 @@ puts "Ruby:           %s" % ruby_version
 puts "RubyGems:       %s" % Gem::VERSION if defined?(Gem::VERSION)
 puts "Bundler:        %s" % Bundler::VERSION if defined?(Bundler::VERSION)
 puts "Compiled with:  %s" % OpenSSL::OPENSSL_VERSION
-puts "Loaded version: %s" % OpenSSL::OPENSSL_LIBRARY_VERSION
+puts "Loaded version: %s" % OpenSSL::OPENSSL_LIBRARY_VERSION if defined?(OpenSSL::OPENSSL_LIBRARY_VERSION)
 puts "SSL_CERT_FILE:  %s" % OpenSSL::X509::DEFAULT_CERT_FILE
 puts "SSL_CERT_DIR:   %s" % OpenSSL::X509::DEFAULT_CERT_DIR
 puts
