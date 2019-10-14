@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# Encoding: utf-8
 
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts "USAGE: check.rb [HOSTNAME] [TLS_VERSION] [VERIFY]"
