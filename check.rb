@@ -66,12 +66,8 @@ def error_reason(error)
 end
 
 begin
-  if defined?(Bundler::URI)
-    bundler_uri = Bundler::URI(uri)
-  else
-    bundler_uri = uri
-  end
-  Bundler::Fetcher.new(Bundler::Source::Rubygems::Remote.new(uri)).send(:connection).request(uri)
+  b_uri = defined?(Bundler::URI) ? Bundler::URI(uri.to_s) : uri
+  Bundler::Fetcher.new(Bundler::Source::Rubygems::Remote.new(b_uri)).send(:connection).request(b_uri)
   bundler_status = "success ✅"
 rescue => error
   bundler_status = "failed  ❌  (#{error_reason(error)})"
@@ -91,7 +87,15 @@ begin
   # Try to connect using HTTPS
   Net::HTTP.new(uri.host, uri.port).tap do |http|
     http.use_ssl = true
-    http.ssl_version = ssl_version.to_sym if ssl_version
+    if ssl_version
+      if http.respond_to? :min_version=
+        vers = ssl_version.sub("v", "").to_sym
+        http.min_version = vers
+        http.max_version = vers
+      else
+        http.ssl_version = ssl_version.to_sym
+      end
+    end
     http.verify_mode = verify_mode
   end.start
 
@@ -109,8 +113,12 @@ rescue => error
       "files OpenSSL needs to verify you are connecting to the genuine #{host} servers."
   # Check for TLS version errors
   when /read server hello A/, /tlsv1 alert protocol version/
-    abort "Your Ruby can't connect to #{host} because your version of OpenSSL is too old. " \
-      "You'll need to upgrade your OpenSSL install and/or recompile Ruby to use a newer OpenSSL."
+    if ssl_version == "TLSv1_3"
+      abort "Your Ruby can't connect to #{host} because #{ssl_version} isn't supported yet."
+    else
+      abort "Your Ruby can't connect to #{host} because your version of OpenSSL is too old. " \
+        "You'll need to upgrade your OpenSSL install and/or recompile Ruby to use a newer OpenSSL."
+    end
   else
     puts "Even worse, we're not sure why. 😕"
     puts

@@ -1,0 +1,32 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: >-
+      ${{ matrix.os }} ${{ matrix.ruby }}
+
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu, macos, windows ]
+        ruby: [ 2.2, 2.7, head ]
+        include:
+          - { os: windows , ruby: mingw }
+        exclude:
+          - { os: windows , ruby: head }
+
+    steps:
+      - name: repo checkout
+        uses: actions/checkout@v2
+
+      - name: load ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+
+      - name: run check.rb
+        run:  |
+          ruby check.rb
