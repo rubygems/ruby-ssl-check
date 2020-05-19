@@ -65,6 +65,11 @@ def error_reason(error)
 end
 
 begin
+  if defined?(Bundler::URI)
+    bundler_uri = Bundler::URI(uri)
+  else
+    bundler_uri = uri
+  end
   Bundler::Fetcher.new(Bundler::Source::Rubygems::Remote.new(uri)).send(:connection).request(uri)
   bundler_status = "success ✅"
 rescue => error
@@ -132,8 +137,19 @@ else
   puts "For some reason, your Ruby installation can connect to #{host}, but neither RubyGems nor Bundler can. The most likely fix is to manually upgrade RubyGems by following the instructions at #{guide_url}. After you've done that, run `gem install bundler` to upgrade Bundler, and then run this script again to make sure everything worked. ❣️"
 end
 
+def tls12_supported?
+  ctx = OpenSSL::SSL::SSLContext.new
+  if ctx.methods.include?(:min_version=)
+    ctx.min_version = ctx.max_version = OpenSSL::SSL::TLS1_2_VERSION
+    true
+  else
+    OpenSSL::SSL::SSLContext::METHODS.include?(:TLSv1_2)
+  end
+rescue
+end
+
 # We were able to connect, but perhaps this Ruby will have trouble when we require TLSv1.2
-unless OpenSSL::SSL::SSLContext::METHODS.include?(:TLSv1_2)
+unless tls12_supported?
   puts
   puts "WARNING: Although your Ruby can connect to #{host} today, your OpenSSL is very old! 👴"
   puts "WARNING: You will need to upgrade OpenSSL before January 2018 in order to keep using #{host}."
