@@ -70,7 +70,6 @@ begin
   Bundler::Fetcher.new(Bundler::Source::Rubygems::Remote.new(b_uri)).send(:connection).request(b_uri)
   bundler_status = "success ✅"
 rescue => error
-puts error.class, error.message
   bundler_status = "failed  ❌  (#{error_reason(error)})"
 end
 puts "Bundler connection to #{host}:       #{bundler_status}"
