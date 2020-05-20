@@ -27,6 +27,7 @@ begin
   require 'rubygems'
   # Try for Bundler version
   require 'bundler'
+  require 'bundler/vendor/uri/lib/uri'
 rescue LoadError
 end
 
