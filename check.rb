@@ -1,6 +1,13 @@
 #!/usr/bin/env ruby
 # Encoding: utf-8
 
+if RUBY_VERSION < "2.7"
+  warn "!!! WARNING !!!",
+        "Ruby #{RUBY_VERSION} has reached end-of-life, and is unsupported.",
+        "This script may not work.",
+        ""
+end
+
 if ARGV.include?("-h") || ARGV.include?("--help")
   puts "USAGE: check.rb [HOSTNAME] [TLS_VERSION] [VERIFY]"
   puts "  default: check.rb rubygems.org auto VERIFY_PEER"
