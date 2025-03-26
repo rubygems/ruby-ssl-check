@@ -66,14 +66,7 @@ def show_ssl_certs
   puts "", "Below affect only Ruby net/http connections:"
   puts
   t = ENV['SSL_CERT_FILE'] || OpenSSL::X509::DEFAULT_CERT_FILE
-  ssl_file = if File.exist? t
-    "✅ exists     #{t}"
-  elsif RUBY_PLATFORM.end_with? 'linux'
-    t = '/etc/ssl/certs/ca-certificates.crt'
-    File.exist?(t)   ? "✅ exists     #{t}" : "❌ is missing #{t}"
-  else
-    "❌ is missing #{t}"
-  end
+  ssl_file = File.exist?(t) ? "✅ exists     #{t}" : "❌ is missing #{t}"
   puts "SSL_CERT_FILE: %s" % ssl_file
 
   t = ENV['SSL_CERT_DIR']  || OpenSSL::X509::DEFAULT_CERT_DIR
